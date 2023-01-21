@@ -38,7 +38,7 @@ function App () {
   }
 
   return (
-    <div className="bg-gray-800 min-h-screen w-full flex items-center justify-center flex-col">
+    <div className="bg-gray-800 w-full flex items-center justify-center flex-col absolute inset-0">
       <div className="w-3/4 md:w-2/3 lg:w-1/3 mx-auto">
         <section>
           <div className="grid grid-cols-3 gap-3">
@@ -67,6 +67,14 @@ function App () {
         <Modal
           title="Felicidades"
           description={`El jugador ${winner} ha ganado la partida`}
+          handleBtnMessage="Reiniciar el juego"
+          handleBtnClick={resetGame}
+        />
+      )}
+      {winner === false && (
+        <Modal
+          title="Wow..."
+          description="Nadie ha ganado, a empezar de nuevo"
           handleBtnMessage="Reiniciar el juego"
           handleBtnClick={resetGame}
         />
