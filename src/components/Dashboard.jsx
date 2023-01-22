@@ -3,14 +3,14 @@ import confetti from 'canvas-confetti'
 
 import { TURNS } from '../constants'
 import { Square } from './Square'
-import { checkEndGame, checkWinnerFrom } from '../services/utils'
+import { checkEndGame, checkWinnerFrom, getBotMoveHard, getBotMoveLow } from '../services/utils'
 import { ResetButton } from './ResetButton'
 import { Modal } from './Modal'
 import { OutlineButton } from './OutlineButton'
 import MainContext from '../context/MainContext'
 
 export const Dashboard = ({ bot }) => {
-  const { setStep } = useContext(MainContext)
+  const { setStep, level } = useContext(MainContext)
   const [board, setBoard] = useState(Array(9).fill(null))
   const [turn, setTurn] = useState(TURNS.X)
   const [winner, setWinner] = useState(null)
@@ -35,14 +35,16 @@ export const Dashboard = ({ bot }) => {
   }
 
   useEffect(() => {
-    if (bot && turn === TURNS.O) {
+    if (bot && turn === TURNS.O && winner === null) {
       setTimeout(() => {
-        const availableSquares = board.map((v, i) => v == null ? i : null).filter(v => v !== null)
-        const randomIndex = Math.floor(Math.random() * availableSquares.length)
-        updateBoard(availableSquares[randomIndex])
-      }, 200)
+        if (level === 'low') { // Lógica para el nivel fácil
+          updateBoard(getBotMoveLow(board))
+        } else { // Lógica para el nivel difícil
+          updateBoard(getBotMoveHard(board))
+        }
+      }, 100)
     }
-  }, [turn])
+  }, [turn, winner])
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))

@@ -4,10 +4,10 @@ import { OutlineButton } from './OutlineButton'
 import MainContext from '../context/MainContext'
 
 export const Menu = () => {
-  const { setStep, setBot } = useContext(MainContext)
+  const { setStep, setBot, setLevel } = useContext(MainContext)
 
   return (
-    <div className="flex flex-col w-full gap-5">
+    <div className="w-full grid grid-cols-1 gap-5">
       <OutlineButton handleClick={() => {
         setStep(1)
         setBot(false)
@@ -17,8 +17,16 @@ export const Menu = () => {
       <OutlineButton handleClick={() => {
         setStep(1)
         setBot(true)
+        setLevel('low')
       }}>
-        Contra el bot
+        Contra el bot (Fácil)
+      </OutlineButton>
+      <OutlineButton handleClick={() => {
+        setStep(1)
+        setBot(true)
+        setLevel('hard')
+      }}>
+        Contra el bot (Difícil)
       </OutlineButton>
       <OutlineButton disabled={true}>
         Multijugador
