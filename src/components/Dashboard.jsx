@@ -4,15 +4,16 @@ import confetti from 'canvas-confetti'
 import { Square } from './Square'
 import { checkEndGame, checkWinnerFrom, getBotMoveHard, getBotMoveLow } from '../services/utils'
 import { ResetButton } from './ResetButton'
-import { Modal } from './Modal'
 import { OutlineButton } from './OutlineButton'
 import MainContext from '../context/MainContext'
+import { Alert } from './Alert.jsx'
 
 export const Dashboard = ({ bot }) => {
   const { setStep, level, players } = useContext(MainContext)
   const [board, setBoard] = useState(Array(9).fill(null))
   const [turn, setTurn] = useState(players.X)
   const [winner, setWinner] = useState(null)
+  const [winnerCombo, setWinnerCombo] = useState([])
 
   const updateBoard = (index) => {
     if (board[index] || winner) return
@@ -24,8 +25,9 @@ export const Dashboard = ({ bot }) => {
     const newTurn = turn === players.X ? players.O : players.X
     setTurn(newTurn)
 
-    const newWinner = checkWinnerFrom(newBoard)
+    const { winner: newWinner, combo } = checkWinnerFrom(newBoard)
     if (newWinner) {
+      setWinnerCombo(combo)
       setWinner(newWinner)
       confetti()
     } else if (checkEndGame(newBoard)) {
@@ -49,6 +51,7 @@ export const Dashboard = ({ bot }) => {
     setBoard(Array(9).fill(null))
     setTurn(players.X)
     setWinner(null)
+    setWinnerCombo([])
   }
 
   return (
@@ -61,41 +64,29 @@ export const Dashboard = ({ bot }) => {
               index={index}
               square={square}
               updateBoard={updateBoard}
+              opacity={winner ? winnerCombo.includes(index) ? 1 : 0.2 : null}
             />
           ))}
         </div>
       </section>
-      <section className='mt-4 flex justify-between flex-col md:flex-row'>
-        <div className='w-full md:w-1/2 order-2 md:order-1 mt-5 md:mt-0 flex justify-end flex-col gap-5 md:gap-2'>
+
+      {winner && <Alert winner={winner} title="Felicidades!" description="Has ganado la partida" />}
+      {winner === false && <Alert title="Nadie ha ganado" description="¡Inténtalo nuevamente!" />}
+
+      <section className='my-5 flex justify-between flex-col md:flex-row'>
+        <div className='w-full order-2 md:order-1 flex justify-end flex-col gap-5 md:gap-2'>
+          {winner === null && (
+            <div className='w-full flex md:justify-end items-center gap-3 mb-5'>
+              <div className="text-white italic">Turno actual</div>
+              <div className="text-4xl">{turn}</div>
+            </div>
+          )}
           <ResetButton resetGame={resetGame} />
-          <OutlineButton handleClick={() => {
-            setStep(0)
-          }}>
+          <OutlineButton handleClick={() => setStep(0)}>
             Volver al menú
           </OutlineButton>
         </div>
-        <div className='w-full md:w-1/2 flex md:justify-end items-center gap-3 order-1 md:order-2'>
-          <div className="text-white italic">Turno actual</div>
-          <div className="text-4xl">{turn}</div>
-        </div>
       </section>
-
-      {winner && (
-        <Modal
-          title="Felicidades"
-          description={`El jugador ${winner} ha ganado la partida`}
-          handleBtnMessage="Reiniciar el juego"
-          handleBtnClick={resetGame}
-        />
-      )}
-      {winner === false && (
-        <Modal
-          title="Wow..."
-          description="Nadie ha ganado, a empezar de nuevo"
-          handleBtnMessage="Reiniciar el juego"
-          handleBtnClick={resetGame}
-        />
-      )}
     </>
   )
 }

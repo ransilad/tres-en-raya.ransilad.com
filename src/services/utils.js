@@ -4,10 +4,10 @@ export const checkWinnerFrom = (boardToCheck) => {
   for (const combo of WINNER_COMBOS) {
     const [a, b, c] = combo
     if (boardToCheck[a] && boardToCheck[a] === boardToCheck[b] && boardToCheck[a] === boardToCheck[c]) {
-      return boardToCheck[a]
+      return { winner: boardToCheck[a], combo: [a, b, c] }
     }
   }
-  return null
+  return { winner: false, combo: [] }
 }
 
 export const checkEndGame = (newBoard) => {
