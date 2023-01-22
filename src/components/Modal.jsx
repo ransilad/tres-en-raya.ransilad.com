@@ -20,7 +20,7 @@ export const Modal = ({
               </p>
             </div>
           </div>
-          <button onClick={() => handleBtnClick()} className="flex-no-shrink bg-red-500 px-5 ml-4 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full mt-6 md:mt-0">
+          <button onClick={() => handleBtnClick()} className="flex-no-shrink bg-red-500 px-5 md:ml-4 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full mt-6 md:mt-0">
             {handleBtnMessage}
           </button>
         </div>
