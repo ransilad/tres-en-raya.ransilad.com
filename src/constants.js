@@ -3,6 +3,18 @@ export const TURNS = {
   O: '🐱'
 }
 
+export const PLAYERS_OPTIONS = [
+  ['🐶', '🐱'],
+  ['🌞', '🌚'],
+  ['⚪', '⚫'],
+  ['🥵', '🥶'],
+  ['😇', '😈'],
+  ['☀️', '❄️'],
+  ['🍏', '🍎'],
+  ['⚽️', '🏀'],
+  ['🥇', '🥈']
+]
+
 export const WINNER_COMBOS = [
   [0, 1, 2],
   [3, 4, 5],

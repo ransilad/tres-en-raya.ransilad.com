@@ -1,4 +1,4 @@
-import { TURNS, WINNER_COMBOS } from '../constants.js'
+import { WINNER_COMBOS } from '../constants.js'
 
 export const checkWinnerFrom = (boardToCheck) => {
   for (const combo of WINNER_COMBOS) {
@@ -22,9 +22,9 @@ export const getBotMoveLow = (board) => {
   return move
 }
 
-export const getBotMoveHard = (board) => {
+export const getBotMoveHard = (board, players) => {
   // Jugar en las esquinas
-  if (board[4] === TURNS.X && board.filter(v => v === null).length === 8) {
+  if (board[4] === players.X && board.filter(v => v === null).length === 8) {
     if (board[0] === null) {
       return 0
     } else if (board[2] === null) {
@@ -39,11 +39,11 @@ export const getBotMoveHard = (board) => {
   // Validar para ganar
   for (const combo of WINNER_COMBOS) {
     const [a, b, c] = combo
-    if (board[a] === TURNS.O && board[b] === TURNS.O && board[c] === null) {
+    if (board[a] === players.O && board[b] === players.O && board[c] === null) {
       return c
-    } else if (board[a] === TURNS.O && board[b] === null && board[c] === TURNS.O) {
+    } else if (board[a] === players.O && board[b] === null && board[c] === players.O) {
       return b
-    } else if (board[a] === null && board[b] === TURNS.O && board[c] === TURNS.O) {
+    } else if (board[a] === null && board[b] === players.O && board[c] === players.O) {
       return a
     }
   }
@@ -51,11 +51,11 @@ export const getBotMoveHard = (board) => {
   // Tapar jugadas ganadoras
   for (const combo of WINNER_COMBOS) {
     const [a, b, c] = combo
-    if (board[a] === TURNS.X && board[b] === TURNS.X && board[c] === null) {
+    if (board[a] === players.X && board[b] === players.X && board[c] === null) {
       return c
-    } else if (board[a] === TURNS.X && board[b] === null && board[c] === TURNS.X) {
+    } else if (board[a] === players.X && board[b] === null && board[c] === players.X) {
       return b
-    } else if (board[a] === null && board[b] === TURNS.X && board[c] === TURNS.X) {
+    } else if (board[a] === null && board[b] === players.X && board[c] === players.X) {
       return a
     }
   }

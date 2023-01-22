@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import confetti from 'canvas-confetti'
 
-import { TURNS } from '../constants'
 import { Square } from './Square'
 import { checkEndGame, checkWinnerFrom, getBotMoveHard, getBotMoveLow } from '../services/utils'
 import { ResetButton } from './ResetButton'
@@ -10,9 +9,9 @@ import { OutlineButton } from './OutlineButton'
 import MainContext from '../context/MainContext'
 
 export const Dashboard = ({ bot }) => {
-  const { setStep, level } = useContext(MainContext)
+  const { setStep, level, players } = useContext(MainContext)
   const [board, setBoard] = useState(Array(9).fill(null))
-  const [turn, setTurn] = useState(TURNS.X)
+  const [turn, setTurn] = useState(players.X)
   const [winner, setWinner] = useState(null)
 
   const updateBoard = (index) => {
@@ -22,7 +21,7 @@ export const Dashboard = ({ bot }) => {
     newBoard[index] = turn
     setBoard(newBoard)
 
-    const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
+    const newTurn = turn === players.X ? players.O : players.X
     setTurn(newTurn)
 
     const newWinner = checkWinnerFrom(newBoard)
@@ -35,12 +34,12 @@ export const Dashboard = ({ bot }) => {
   }
 
   useEffect(() => {
-    if (bot && turn === TURNS.O && winner === null) {
+    if (bot && turn === players.O && winner === null) {
       setTimeout(() => {
         if (level === 'low') { // Lógica para el nivel fácil
           updateBoard(getBotMoveLow(board))
         } else { // Lógica para el nivel difícil
-          updateBoard(getBotMoveHard(board))
+          updateBoard(getBotMoveHard(board, players))
         }
       }, 100)
     }
@@ -48,7 +47,7 @@ export const Dashboard = ({ bot }) => {
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))
-    setTurn(TURNS.X)
+    setTurn(players.X)
     setWinner(null)
   }
 
