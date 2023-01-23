@@ -6,7 +6,7 @@ import { PlayersLists } from './PlayersLists.jsx'
 import { MultiplayerButton } from './MultiplayerButton.jsx'
 
 export const Menu = () => {
-  const { setStep, setBot, setLevel } = useContext(MainContext)
+  const { setStep, setBot, setLevel, setMyTurn, players } = useContext(MainContext)
 
   return (
     <div className="w-full grid grid-cols-1 gap-5">
@@ -14,6 +14,7 @@ export const Menu = () => {
       <OutlineButton handleClick={() => {
         setStep(1)
         setBot(false)
+        setMyTurn(players.X)
       }}>
         Local
       </OutlineButton>
@@ -21,6 +22,7 @@ export const Menu = () => {
         setStep(1)
         setBot(true)
         setLevel('low')
+        setMyTurn(players.X)
       }}>
         Contra el bot (Fácil)
       </OutlineButton>
@@ -28,6 +30,7 @@ export const Menu = () => {
         setStep(1)
         setBot(true)
         setLevel('hard')
+        setMyTurn(players.X)
       }}>
         Contra el bot (Difícil)
       </OutlineButton>

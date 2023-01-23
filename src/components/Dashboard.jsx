@@ -63,7 +63,9 @@ export const Dashboard = ({ bot }) => {
     if (newWinner) {
       setWinnerCombo(combo)
       setWinner(newWinner)
-      confetti()
+      if (newWinner === myTurn) {
+        confetti()
+      }
     } else if (checkEndGame(_board)) {
       setWinner(false)
     }
@@ -84,14 +86,7 @@ export const Dashboard = ({ bot }) => {
       updateBoardOnFirebase(JSON.stringify(newBoard), newTurn)
     }
 
-    const { winner: newWinner, combo } = checkWinnerFrom(newBoard)
-    if (newWinner) {
-      setWinnerCombo(combo)
-      setWinner(newWinner)
-      confetti()
-    } else if (checkEndGame(newBoard)) {
-      setWinner(false)
-    }
+    checkWinner(newBoard)
   }
 
   const resetGame = () => {
@@ -162,13 +157,14 @@ export const Dashboard = ({ bot }) => {
             </div>
           </section>
 
-          {winner && roomSelected && roomSelected && myTurn !== getCurrentRoom().turn && (
-            <Alert winner={winner} title="¡Felicidades!" description="Has ganado la partida" />
-          )}
-          {winner && roomSelected && roomSelected && myTurn === getCurrentRoom().turn && (
-            <Alert title="¡Lo siento!" description="Perdiste la partida" />
-          )}
-          {winner && !roomSelected && <Alert winner={winner} title="¡Felicidades!" description="Has ganado la partida" />}
+          {(
+            (winner && roomSelected && myTurn !== getCurrentRoom().turn) ||
+            (winner && !roomSelected && myTurn === winner)
+          ) && <Alert winner={winner} title="¡Felicidades!" description="Has ganado la partida" />}
+          {(
+            (winner && roomSelected && myTurn === getCurrentRoom().turn) ||
+            (winner && !roomSelected && myTurn !== winner)
+          ) && <Alert title="¡Lo siento!" description="Perdiste la partida" />}
           {winner === false && <Alert title="Nadie ha ganado" description="¡Inténtalo nuevamente!" />}
 
           <section className='my-5 flex justify-between flex-col md:flex-row'>
