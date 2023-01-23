@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { OutlineButton } from './OutlineButton'
 import MainContext from '../context/MainContext'
 import { PlayersLists } from './PlayersLists.jsx'
+import { MultiplayerButton } from './MultiplayerButton.jsx'
 
 export const Menu = () => {
   const { setStep, setBot, setLevel } = useContext(MainContext)
@@ -30,9 +31,7 @@ export const Menu = () => {
       }}>
         Contra el bot (Difícil)
       </OutlineButton>
-      <OutlineButton disabled={true}>
-        Multijugador
-      </OutlineButton>
+      <MultiplayerButton />
     </div>
   )
 }
