@@ -35,13 +35,10 @@ export const Dashboard = ({ bot }) => {
     if (roomSelected) {
       const currentRoom = getCurrentRoom()
       const boardOnFirebase = JSON.parse(currentRoom.board)
-      if (boardOnFirebase.every(item => item === null)) {
-        resetGame()
-        return
-      }
 
       setBoard(boardOnFirebase)
       setTurn(currentRoom.turn)
+      setWinner(null)
       checkWinner(boardOnFirebase)
     }
   }, [rooms])
@@ -50,12 +47,13 @@ export const Dashboard = ({ bot }) => {
     return rooms.find(room => room.id === roomSelected)
   }
 
-  const updateBoardOnFirebase = (_board, _turn) => {
+  const updateBoardOnFirebase = (_board, _turn, updateFirstTurn = false) => {
     const currentRoom = getCurrentRoom()
     set(ref(db, 'rooms/' + roomSelected), {
       ...currentRoom,
       board: _board,
-      turn: _turn,
+      turn: updateFirstTurn ? (currentRoom.firstTurn === players.X ? players.O : players.X) : _turn,
+      firstTurn: updateFirstTurn ? (currentRoom.firstTurn === players.X ? players.O : players.X) : currentRoom.firstTurn,
       id: null
     })
   }
@@ -98,12 +96,16 @@ export const Dashboard = ({ bot }) => {
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))
-    setTurn(players.X)
+    setTurn(Math.random() > 0.5 ? players.X : players.O)
     setWinner(null)
     setWinnerCombo([])
 
     if (roomSelected) {
-      updateBoardOnFirebase(JSON.stringify(Array(9).fill(null)), players.X)
+      updateBoardOnFirebase(
+        JSON.stringify(Array(9).fill(null)),
+        players.X,
+        true
+      )
     }
   }
 

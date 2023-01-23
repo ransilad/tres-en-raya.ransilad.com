@@ -60,6 +60,10 @@ export const getBotMoveHard = (board, players) => {
     }
   }
 
+  if (board.filter(b => b === null).length === 9) {
+    return getBotMoveLow(board)
+  }
+
   // Demás jugadas
   // Combinaciones disponibles
   let possibleMoves = []
