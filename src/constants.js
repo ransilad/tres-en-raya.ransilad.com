@@ -12,7 +12,8 @@ export const PLAYERS_OPTIONS = [
   ['☀️', '❄️'],
   ['🍏', '🍎'],
   ['⚽️', '🏀'],
-  ['🥇', '🥈']
+  ['🥇', '🥈'],
+  ['❌', '🔵']
 ]
 
 export const WINNER_COMBOS = [
