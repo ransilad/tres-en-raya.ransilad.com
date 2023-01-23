@@ -76,7 +76,7 @@ export const MultiplayerButton = () => {
         <label htmlFor="rooms" className="text-white text-center text-sm italic">Salas actuales</label>
         <select
           id="rooms"
-          className="border rounded-md px-4 py-2 bg-gray-600 text-white text-center"
+          className="border rounded-md px-4 py-2 bg-transparent text-white text-center hover:bg-gray-800 hover:border-gray-900 cursor-pointer"
           onChange={(e) => handleChanceRoomName(e, true)}
           value={roomNameFromSelect}
         >
@@ -90,7 +90,7 @@ export const MultiplayerButton = () => {
         type="text"
         value={roomName}
         onChange={handleChanceRoomName}
-        className="border rounded-md px-4 py-2 bg-gray-600 text-white text-center"
+        className="border bg-transparent rounded-md px-4 py-2 bg-gray-600 text-white text-center"
         placeholder="Código de la sala"
         spellCheck="false"
         autoCorrect="off"

@@ -5,7 +5,7 @@ export const OutlineButton = ({ children, handleClick, disabled = false }) => {
     if (disabled) {
       className += ' border-gray-500 text-gray-500'
     } else {
-      className += ' border-white text-white hover:bg-gray-700 hover:border-gray-800 focus:outline-none focus:shadow-outline'
+      className += ' border-white text-white hover:bg-gray-800 hover:border-gray-900 focus:outline-none focus:shadow-outline'
     }
 
     return className
