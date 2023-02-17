@@ -6,18 +6,13 @@ import { Menu } from '../components/Menu'
 import MainContext from '../context/MainContext'
 
 export const MainContainer = () => {
-  const { step, bot } = useContext(MainContext)
+  const { step } = useContext(MainContext)
 
   return (
     <div className="w-3/4 md:w-1/3 lg:w-1/4 mx-auto">
       <h1 className="text-white text-4xl font-normal pb-10 text-center">Tres en raya</h1>
-
-      {step === 0 && (
-        <Menu />
-      )}
-      {step === 1 && (
-        <Dashboard bot={bot}/>
-      )}
+      {step === 0 && <Menu />}
+      {step === 1 && <Dashboard/>}
     </div>
   )
 }
