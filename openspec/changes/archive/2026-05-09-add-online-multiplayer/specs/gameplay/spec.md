@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: 3x3 game board
 The system SHALL display a classic 3x3 Tres en Raya board during an active local or online match using `prd/mockups/game/screen.png` as the visual target and `prd/mockups/game/DESIGN.md` / `prd/mockups/game/code.html` as implementation references for large rounded square cells, dark card surfaces, and cyan/pink mark styling.

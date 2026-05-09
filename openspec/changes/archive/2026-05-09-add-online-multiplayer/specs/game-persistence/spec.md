@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Persist active match state
 The system SHALL persist local active match state locally in the browser. For online matches, the system SHALL persist only resumable session metadata such as room code and local player assignment, while the authoritative board state remains in the online room.

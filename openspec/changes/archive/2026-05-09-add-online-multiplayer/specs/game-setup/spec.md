@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Initial start screen
 The system SHALL display an initial start screen before a match begins using `prd/mockups/Inputs/screen.png` as the visual target and `prd/mockups/Inputs/DESIGN.md` / `prd/mockups/Inputs/code.html` as implementation references: centered title, short instruction text, mode selection for local or online play, player X and player O name fields for local mode, online room create/join controls for online mode, a decorative X/O mark treatment, a prominent pill-shaped primary action, and compact secondary controls only when they have implemented behavior.

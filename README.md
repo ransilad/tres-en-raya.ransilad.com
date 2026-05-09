@@ -1,6 +1,6 @@
 # Tres en Raya
 
-Juego retro de Tres en Raya para dos jugadores locales, construido con Astro y TypeScript.
+Juego retro de Tres en Raya para dos jugadores locales y modo online 1vs1, construido con Astro y TypeScript.
 
 **[Jugar ahora →](https://tres-en-raya.ransilad.com)**
 
@@ -17,6 +17,7 @@ Juego retro de Tres en Raya para dos jugadores locales, construido con Astro y T
 - Control de sonido (activar/desactivar)
 - Tema oscuro retro, totalmente responsive (mobile, tablet, desktop)
 - PWA instalable y funciona offline tras la primera carga
+- Multijugador online 1vs1 con salas temporales vía Supabase Realtime
 
 ## Stack
 
@@ -26,7 +27,7 @@ Juego retro de Tres en Raya para dos jugadores locales, construido con Astro y T
 | Lógica | TypeScript puro, sin framework de UI |
 | Estilos | CSS vanilla con variables (sin preprocesador) |
 | Audio | Web Audio API — sin archivos de audio |
-| Persistencia | localStorage (clave `tres-en-raya-state`, versionado) |
+| Persistencia | localStorage (local) + Supabase Realtime (online) |
 | PWA | Service worker + Web Manifest |
 | Tests | Vitest |
 | Deploy | Vercel |
@@ -42,6 +43,7 @@ src/
     logic.ts               # Lógica pura (testable en Node)
     validation.ts          # Validación de nombres y estado
     persistence.ts         # localStorage save/load
+    online/                # Cliente Supabase, salas y helpers online
     audio.ts               # Efectos de sonido (Web Audio API)
     ui.ts                  # Renderizado y eventos DOM
   tests/
@@ -88,9 +90,26 @@ src/tests/logic.test.ts       # 13 tests: movimientos, detección de victoria/em
 src/tests/validation.test.ts  # 12 tests: validación de nombres y estado persistido
 ```
 
+## Supabase
+
+El modo online usa Supabase Realtime con el proyecto:
+
+```env
+PUBLIC_SUPABASE_URL=https://rudyxhxefkqaowbndlom.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=tu_clave_publica_anon_o_publishable
+```
+
+La clave `service_role` es secreta y nunca debe usarse en frontend, variables `PUBLIC_`, ni archivos versionados.
+
+El schema de la tabla `rooms`, Realtime y RLS está en:
+
+```text
+supabase/migrations/20260509123000_create_rooms.sql
+```
+
 ## Deploy
 
-El proyecto se despliega automáticamente en Vercel desde la rama principal. La configuración está en `vercel.json`. No requiere variables de entorno.
+El proyecto se despliega automáticamente en Vercel desde la rama principal. La configuración está en `vercel.json`. Para habilitar online, configurar las variables públicas de Supabase en Vercel.
 
 ## Licencia
 

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { validateOnlineSession } from '../game/persistence';
 import { validatePlayerName, validateGameState } from '../game/validation';
 import { CURRENT_STATE_VERSION } from '../game/logic';
 import type { GameState } from '../game/types';
@@ -16,6 +17,32 @@ describe('validatePlayerName', () => {
   it('returns null for non-string', () => {
     expect(validatePlayerName(123)).toBeNull();
     expect(validatePlayerName(null)).toBeNull();
+  });
+});
+
+describe('validateOnlineSession', () => {
+  const valid = {
+    version: 1,
+    roomCode: 'ABC123',
+    mark: 'X',
+    playerName: 'Alice',
+    playerToken: '12345678901234567890123456789012',
+  };
+
+  it('returns session for valid online metadata', () => {
+    expect(validateOnlineSession(valid)).toEqual(valid);
+  });
+
+  it('returns null for invalid room code', () => {
+    expect(validateOnlineSession({ ...valid, roomCode: 'bad' })).toBeNull();
+  });
+
+  it('returns null for invalid mark', () => {
+    expect(validateOnlineSession({ ...valid, mark: 'Z' })).toBeNull();
+  });
+
+  it('returns null for short player token', () => {
+    expect(validateOnlineSession({ ...valid, playerToken: 'short' })).toBeNull();
   });
 });
 
