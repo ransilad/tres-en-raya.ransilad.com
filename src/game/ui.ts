@@ -56,10 +56,14 @@ function escapeHtml(value: string): string {
   })[char] ?? char);
 }
 
-function iconSvg(name: 'back' | 'reset' | Mark, className = 'icon'): string {
+function iconSvg(name: 'back' | 'reset' | 'play' | 'menu' | 'crown' | 'draw' | Mark, className = 'icon'): string {
   const paths = {
     back: '<path d="M14.5 5.5 8 12l6.5 6.5"/><path d="M8.75 12H20"/>',
     reset: '<path d="M20 6v5h-5"/><path d="M19.25 11A7.5 7.5 0 1 0 17 16.3"/>',
+    play: '<path d="M8 5.75v12.5L18 12 8 5.75Z"/>',
+    menu: '<path d="M4.5 6.5h15"/><path d="M4.5 12h15"/><path d="M4.5 17.5h15"/>',
+    crown: '<path d="m4.5 8.5 4 3.5L12 5l3.5 7 4-3.5-1.75 9h-11.5L4.5 8.5Z"/><path d="M7 20h10"/>',
+    draw: '<path d="M7 7h10v10H7z"/><path d="m8 8 8 8"/><path d="m16 8-8 8"/>',
     X: '<path d="M6.5 6.5 17.5 17.5"/><path d="M17.5 6.5 6.5 17.5"/>',
     O: '<circle cx="12" cy="12" r="6.5"/>',
   };
@@ -450,10 +454,13 @@ function renderGameScreen(): string {
 
       <div id="win-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Resultado de la partida">
         <div class="modal-content">
-          <div class="modal-icon" aria-hidden="true">♕</div>
+          <div class="modal-icon" id="modal-icon" aria-hidden="true"></div>
           <h2 class="modal-title" id="modal-title"></h2>
-          <button class="btn btn-primary" id="modal-play-again">${onlineView ? 'Pedir revancha' : 'Jugar de nuevo'}</button>
-          <button class="btn btn-secondary" id="modal-back-menu">Volver al menu</button>
+          <p class="modal-copy" id="modal-copy"></p>
+          <div class="modal-actions">
+            <button class="btn modal-action-btn modal-action-primary" id="modal-play-again" aria-label="${onlineView ? 'Pedir revancha' : 'Jugar de nuevo'}">${iconSvg('reset')}</button>
+            <button class="btn modal-action-btn modal-action-secondary" id="modal-back-menu" aria-label="Volver al menu">${iconSvg('back')}</button>
+          </div>
         </div>
       </div>
     </div>
@@ -463,14 +470,26 @@ function renderGameScreen(): string {
 function showResultModal() {
   if (!state) return;
   const modal = document.getElementById('win-modal');
+  const contentEl = modal?.querySelector<HTMLElement>('.modal-content');
+  const iconEl = document.getElementById('modal-icon');
   const titleEl = document.getElementById('modal-title');
-  if (!modal || !titleEl) return;
+  const copyEl = document.getElementById('modal-copy');
+  if (!modal || !contentEl || !iconEl || !titleEl || !copyEl) return;
 
   const view = getRenderableState();
+  contentEl.classList.remove('modal-win', 'modal-loss', 'modal-draw');
+
   if (isWin(view.result)) {
-    titleEl.textContent = `¡${view.players[view.result.winner]} gana!`;
+    const didCurrentOnlinePlayerLose = isOnlineState(state) && state.session.mark !== view.result.winner;
+    contentEl.classList.add(didCurrentOnlinePlayerLose ? 'modal-loss' : 'modal-win');
+    iconEl.innerHTML = iconSvg(didCurrentOnlinePlayerLose ? view.result.winner : 'crown', 'icon modal-result-icon');
+    titleEl.textContent = `${view.players[view.result.winner]} ganó`;
+    copyEl.textContent = didCurrentOnlinePlayerLose ? `${view.players[view.result.winner]} cerró la línea antes.` : 'Tres marcas alineadas. Jugada perfecta.';
   } else if (isDraw(view.result)) {
+    contentEl.classList.add('modal-draw');
+    iconEl.innerHTML = iconSvg('draw', 'icon modal-result-icon');
     titleEl.textContent = 'Empate';
+    copyEl.textContent = 'Nadie cedió el centro de la arena.';
   }
 
   modal.classList.remove('hidden');

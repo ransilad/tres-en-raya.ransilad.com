@@ -740,8 +740,10 @@ input:focus-visible,
   align-items: center;
   justify-content: center;
   padding: var(--container-padding);
-  background: rgba(11, 19, 38, 0.82);
-  backdrop-filter: blur(8px);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(138, 235, 255, 0.12), transparent 30vw),
+    rgba(5, 8, 20, 0.82);
+  backdrop-filter: blur(12px);
 }
 
 .modal.hidden {
@@ -758,12 +760,18 @@ input:focus-visible,
 }
 
 .modal-content {
+  position: relative;
+  overflow: hidden;
   width: 100%;
-  max-width: 360px;
-  border: 1px solid rgba(60, 73, 76, 0.55);
+  max-width: 380px;
+  border: 1px solid rgba(138, 235, 255, 0.16);
   border-radius: var(--radius-3xl);
-  background: var(--surface-container-low);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
+  background:
+    linear-gradient(180deg, rgba(23, 31, 51, 0.98), rgba(11, 19, 38, 0.96)),
+    var(--surface-container-low);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -772,11 +780,49 @@ input:focus-visible,
   text-align: center;
 }
 
+.modal-content::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% -16%, rgba(138, 235, 255, 0.2), transparent 40%),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+}
+
 .modal-icon {
+  position: relative;
+  z-index: 1;
+  width: 74px;
+  height: 74px;
+  border: 1px solid rgba(138, 235, 255, 0.18);
+  border-radius: 28px;
+  background: rgba(138, 235, 255, 0.08);
   color: var(--primary);
-  font-size: 3.25rem;
-  line-height: 1;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 18px 46px -24px var(--shadow-primary);
   animation: trophyIn 360ms ease;
+}
+
+.modal-result-icon {
+  width: 42px;
+  height: 42px;
+  stroke-width: 1.9;
+}
+
+.modal-loss .modal-icon {
+  border-color: rgba(255, 178, 185, 0.22);
+  background: rgba(255, 178, 185, 0.08);
+  color: var(--secondary);
+  box-shadow: 0 18px 46px -24px var(--shadow-secondary);
+}
+
+.modal-draw .modal-icon {
+  border-color: rgba(218, 226, 253, 0.18);
+  background: rgba(218, 226, 253, 0.06);
+  color: var(--on-surface);
+  box-shadow: 0 18px 46px -24px rgba(218, 226, 253, 0.18);
 }
 
 @keyframes trophyIn {
@@ -785,13 +831,75 @@ input:focus-visible,
 }
 
 .modal-title {
-  margin-bottom: var(--gap-sm);
+  position: relative;
+  z-index: 1;
   color: var(--primary);
   font-size: clamp(1.5rem, 7vw, 2rem);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.modal-loss .modal-title {
+  color: var(--secondary);
+}
+
+.modal-draw .modal-title {
+  color: var(--on-surface);
+}
+
+.modal-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 28ch;
+  color: var(--on-surface-variant);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.modal-actions {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap-md);
+  margin-top: var(--gap-sm);
+}
+
+.modal-action-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-full);
+}
+
+.modal-action-btn .icon {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.modal-action-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: 0 20px 42px -18px var(--shadow-primary);
+}
+
+.modal-action-primary:hover:not(:disabled) {
+  background: #a2eeff;
+}
+
+.modal-action-secondary {
+  border: 1px solid rgba(218, 226, 253, 0.12);
+  background: rgba(45, 52, 73, 0.92);
+  color: var(--on-surface);
+  box-shadow: 0 18px 38px -24px rgba(0, 0, 0, 0.8);
+}
+
+.modal-action-secondary:hover:not(:disabled) {
+  background: rgba(61, 69, 94, 0.96);
 }
 
 @media (max-width: 380px) {
