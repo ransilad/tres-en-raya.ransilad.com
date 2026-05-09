@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tres-en-raya-v1';
+const CACHE_NAME = 'tres-en-raya-v3';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -6,6 +6,7 @@ const PRECACHE_ASSETS = [
   '/favicon.svg',
   '/icon-192.svg',
   '/icon-512.svg',
+  '/og-image.webp',
 ];
 
 self.addEventListener('install', (event) => {

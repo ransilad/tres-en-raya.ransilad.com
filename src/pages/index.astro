@@ -1,20 +1,57 @@
 ---
 // Main page - Tres en Raya
 import '../styles/global.css';
+
+const siteUrl = 'https://tres-en-raya.ransilad.com';
+const title = 'Tres en Raya - Juego retro para dos jugadores';
+const description = 'Juega Tres en Raya gratis con un amigo en el mismo dispositivo. Una partida local, rapida y con estilo arcade retro.';
+const imageUrl = `${siteUrl}/og-image.webp`;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Game',
+  name: 'Tres en Raya',
+  url: siteUrl,
+  image: imageUrl,
+  description,
+  inLanguage: 'es',
+  genre: 'Juego de estrategia',
+  numberOfPlayers: '2',
+  gamePlatform: 'Web',
+  applicationCategory: 'GameApplication',
+  operatingSystem: 'Any',
+};
 ---
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tres en Raya</title>
-    <meta name="description" content="Juego retro de Tres en Raya para dos jugadores locales. Juega con un amigo en el mismo dispositivo." />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href={siteUrl} />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Tres en Raya" />
-    <meta property="og:description" content="Juego retro de Tres en Raya para dos jugadores locales." />
+    <meta property="og:site_name" content="Tres en Raya" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:secure_url" content={imageUrl} />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:width" content="706" />
+    <meta property="og:image:height" content="1600" />
+    <meta property="og:image:alt" content="Pantalla del juego Tres en Raya con tema arcade retro" />
+    <meta property="og:locale" content="es_ES" />
+
+    <!-- Twitter / social fallback -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content="Pantalla del juego Tres en Raya con tema arcade retro" />
 
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json" />
@@ -26,9 +63,16 @@ import '../styles/global.css';
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icon-192.svg" />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <main>
+        <h1>Tres en Raya</h1>
+        <p>{description}</p>
+      </main>
+    </noscript>
     <script>
       // Service worker registration
       if ('serviceWorker' in navigator) {
