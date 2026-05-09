@@ -1,4 +1,4 @@
-import type { GameState, Mark } from './types';
+import type { GameState } from './types';
 import {
   initialGameState,
   applyMove,
@@ -109,7 +109,7 @@ function bindSetupEvents() {
 function renderGameScreen(): string {
   if (!state) return '';
   const { board, currentTurn, players, phase, soundEnabled, result } = state;
-  const winLine = isWin(result) ? result.line : [];
+  const winLine: number[] = isWin(result) ? result.line : [];
 
   const cells = board.map((cell, i) => {
     const isWinCell = winLine.includes(i);
