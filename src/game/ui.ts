@@ -36,7 +36,7 @@ let setupMode: SetupMode = 'local';
 let setupMessage = '';
 let setupLoading = false;
 let roomChannel: RealtimeChannel | null = null;
-let roomPollTimer: number | null = null;
+let roomSyncTimer: number | null = null;
 
 // ---- DOM Helpers ----
 
@@ -634,9 +634,9 @@ function subscribeToCurrentRoom() {
     applyIncomingOnlineRoom(room);
   });
   roomChannel = subscription.channel;
-  roomPollTimer = window.setInterval(() => {
+  roomSyncTimer = window.setTimeout(() => {
     void pollCurrentRoom();
-  }, 1000);
+  }, 1500);
 }
 
 function cleanupRoomSubscription() {
@@ -644,9 +644,9 @@ function cleanupRoomSubscription() {
     void getSupabaseClient().removeChannel(roomChannel);
     roomChannel = null;
   }
-  if (roomPollTimer !== null) {
-    window.clearInterval(roomPollTimer);
-    roomPollTimer = null;
+  if (roomSyncTimer !== null) {
+    window.clearTimeout(roomSyncTimer);
+    roomSyncTimer = null;
   }
 }
 
@@ -670,6 +670,7 @@ async function pollCurrentRoom() {
 
 function applyIncomingOnlineRoom(room: OnlineRoomRecord) {
   if (!isOnlineState(state)) return;
+  if (isStaleOnlineRoom(state.room, room)) return;
   if (!hasOnlineRoomChanged(state.room, room)) return;
 
   if (room.status === 'abandoned') {
@@ -686,6 +687,11 @@ function applyIncomingOnlineRoom(room: OnlineRoomRecord) {
 
   state = { ...state, room, connectionStatus: 'connected', errorMessage: undefined };
   render();
+}
+
+function isStaleOnlineRoom(current: OnlineRoomRecord, incoming: OnlineRoomRecord): boolean {
+  if (!current.updated_at || !incoming.updated_at) return false;
+  return new Date(incoming.updated_at).getTime() < new Date(current.updated_at).getTime();
 }
 
 function hasOnlineRoomChanged(current: OnlineRoomRecord, incoming: OnlineRoomRecord): boolean {
