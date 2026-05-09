@@ -1,0 +1,44 @@
+---
+// Main page - Tres en Raya
+import '../styles/global.css';
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tres en Raya</title>
+    <meta name="description" content="Juego retro de Tres en Raya para dos jugadores locales. Juega con un amigo en el mismo dispositivo." />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Tres en Raya" />
+    <meta property="og:description" content="Juego retro de Tres en Raya para dos jugadores locales." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Tres en Raya" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.svg" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      // Service worker registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {/* ignore */});
+        });
+      }
+    </script>
+    <script>
+      import('../game/ui').then(() => {}).catch(console.error);
+    </script>
+  </body>
+</html>
