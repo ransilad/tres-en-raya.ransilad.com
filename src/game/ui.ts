@@ -219,7 +219,7 @@ function renderLocalSetupForm(): string {
       <div class="field player-input player-input-x">
         <label class="sr-only" for="player-x">Nombre del jugador 1</label>
         <span class="input-mark mark-X" aria-hidden="true">${renderMarkIcon('X')}</span>
-        <input id="player-x" type="text" maxlength="20" placeholder="Nombre del jugador 1" autocomplete="off" autofocus aria-required="true" aria-describedby="error-x" />
+        <input id="player-x" type="text" maxlength="20" placeholder="Nombre del jugador 1" autocomplete="off" aria-required="true" aria-describedby="error-x" />
         <span class="field-error" id="error-x" aria-live="polite"></span>
       </div>
       <div class="field player-input player-input-o">
@@ -244,7 +244,7 @@ function renderOnlineSetupForm(): string {
       <div class="field player-input player-input-x">
         <label class="sr-only" for="online-name">Tu nombre</label>
         <span class="input-mark mark-X" aria-hidden="true">${renderMarkIcon(isJoin ? 'O' : 'X')}</span>
-        <input id="online-name" type="text" maxlength="20" placeholder="Tu nombre" autocomplete="off" autofocus aria-required="true" aria-describedby="online-error" ${setupLoading ? 'disabled' : ''} />
+        <input id="online-name" type="text" maxlength="20" placeholder="Tu nombre" autocomplete="off" aria-required="true" aria-describedby="online-error" ${setupLoading ? 'disabled' : ''} />
       </div>
       ${isJoin ? `
         <div class="field player-input player-input-o">
@@ -272,7 +272,8 @@ function bindSetupEvents() {
 
   requestAnimationFrame(() => {
     const input = document.querySelector<HTMLInputElement>(setupMode === 'local' ? '#player-x' : '#online-name');
-    input?.focus({ preventScroll: true });
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    input?.focus({ preventScroll: canHover });
   });
 
   document.getElementById('setup-form')?.addEventListener('submit', (e) => {
@@ -702,7 +703,17 @@ function hasOnlineRoomChanged(current: OnlineRoomRecord, incoming: OnlineRoomRec
 
 // ---- Init ----
 
+function syncVisualViewportHeight() {
+  const height = window.visualViewport?.height ?? window.innerHeight;
+  document.documentElement.style.setProperty('--visual-viewport-height', `${height}px`);
+}
+
 async function init() {
+  syncVisualViewportHeight();
+  window.visualViewport?.addEventListener('resize', syncVisualViewportHeight);
+  window.visualViewport?.addEventListener('scroll', syncVisualViewportHeight);
+  window.addEventListener('resize', syncVisualViewportHeight);
+
   const onlineSession = loadOnlineSession();
   if (onlineSession && isSupabaseConfigured()) {
     const room = await fetchOnlineRoom(onlineSession.roomCode);
