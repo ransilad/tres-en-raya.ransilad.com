@@ -137,6 +137,7 @@ function renderSetupScreen(): string {
             maxlength="20"
             placeholder="Nombre del jugador 1"
             autocomplete="off"
+            autofocus
             aria-required="true"
             aria-describedby="error-x"
           />
@@ -172,6 +173,8 @@ function renderSetupScreen(): string {
 
 function bindSetupEvents() {
   const form = document.getElementById('setup-form') as HTMLFormElement;
+  requestAnimationFrame(() => qs<HTMLInputElement>('#player-x').focus({ preventScroll: true }));
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const nameX = validatePlayerName((qs<HTMLInputElement>('#player-x').value));
