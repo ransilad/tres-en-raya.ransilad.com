@@ -22,11 +22,11 @@ The system MUST prevent selecting a cell that already contains a symbol.
 - **THEN** the system leaves the board unchanged and keeps the current turn unchanged
 
 ### Requirement: Current turn display
-The system SHALL clearly show whose turn it is during an active match.
+The system SHALL clearly show whose turn it is during an active match. The turn indicator and player badges SHALL update in place without causing a full game screen re-render.
 
 #### Scenario: Turn changes
 - **WHEN** a valid move changes the current turn
-- **THEN** the system updates the visible turn indicator to the next player's name and symbol
+- **THEN** the system updates the visible turn indicator to the next player's name and symbol without replacing or flashing the rest of the game screen
 
 ### Requirement: Win detection
 The system SHALL automatically detect a winning row, column, or diagonal after each valid move.

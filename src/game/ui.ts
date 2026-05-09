@@ -31,11 +31,61 @@ function render() {
     app.innerHTML = renderSetupScreen();
     bindSetupEvents();
   } else {
-    app.innerHTML = renderGameScreen();
-    bindGameEvents();
+    const alreadyMounted = !!document.querySelector('.game-screen');
+    if (alreadyMounted) {
+      updateGameScreen();
+    } else {
+      app.innerHTML = renderGameScreen();
+      bindGameEvents();
+    }
     if (state.phase === 'won') {
       setTimeout(() => showWinModal(), 50);
     }
+  }
+}
+
+// ---- Targeted game screen update (no full innerHTML replacement) ----
+
+function updateGameScreen() {
+  if (!state) return;
+  const { board, currentTurn, players, phase, soundEnabled, result } = state;
+  const winLine: number[] = isWin(result) ? result.line : [];
+
+  // Update each cell in place
+  document.querySelectorAll<HTMLButtonElement>('.cell').forEach((btn) => {
+    const i = parseInt(btn.dataset['index'] ?? '-1', 10);
+    if (i < 0) return;
+    const cell = board[i];
+    const mark = cell ?? '';
+    const isWinCell = winLine.includes(i);
+    const shouldDisable = phase !== 'playing' || cell !== null;
+
+    btn.textContent = mark;
+    btn.className = `cell${mark ? ` mark-${mark}` : ''}${isWinCell ? ' win-cell' : ''}`;
+    btn.disabled = shouldDisable;
+    btn.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+    btn.setAttribute('aria-label', `Celda ${i + 1}${mark ? `: ${mark}` : ', vacía'}`);
+  });
+
+  // Update turn indicator
+  const turnEl = document.querySelector<HTMLElement>('.turn-indicator');
+  if (turnEl) {
+    const currentName = players[currentTurn];
+    turnEl.innerHTML = phase === 'playing' ? `Turno de <strong>${currentName}</strong>` : '';
+  }
+
+  // Update player badge active classes
+  document.querySelectorAll<HTMLElement>('.player-badge').forEach((badge) => {
+    const isX = badge.querySelector('.mark-label.x') !== null;
+    const isActive = phase === 'playing' && (isX ? currentTurn === 'X' : currentTurn === 'O');
+    badge.classList.toggle('active', isActive);
+  });
+
+  // Update sound toggle
+  const soundBtn = document.getElementById('sound-toggle');
+  if (soundBtn) {
+    soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+    soundBtn.setAttribute('aria-label', soundEnabled ? 'Desactivar sonido' : 'Activar sonido');
   }
 }
 
