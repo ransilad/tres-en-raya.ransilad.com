@@ -131,6 +131,17 @@ button:disabled {
   transition: transform var(--transition), background var(--transition), color var(--transition), box-shadow var(--transition);
 }
 
+.icon {
+  width: 1em;
+  height: 1em;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.25;
+}
+
 .btn:focus-visible,
 input:focus-visible,
 .cell:focus-visible {
@@ -246,6 +257,11 @@ input:focus-visible,
   line-height: 1;
 }
 
+.input-mark .mark-icon {
+  width: 1em;
+  height: 1em;
+}
+
 .mark-X,
 .mark-X.input-mark,
 .hero-x {
@@ -307,6 +323,11 @@ input:focus-visible,
   font-size: 8.5rem;
   font-weight: 400;
   line-height: 1;
+}
+
+.hero-marks .mark-icon {
+  width: 1em;
+  height: 1em;
 }
 
 .hero-x {
@@ -441,6 +462,11 @@ input:focus-visible,
   transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
 }
 
+.cell .mark-icon {
+  width: 0.82em;
+  height: 0.82em;
+}
+
 .cell:hover:not(:disabled) {
   background: var(--surface-container-high);
 }
@@ -529,6 +555,11 @@ input:focus-visible,
   transform: translateY(-50%);
   font-size: 1.65rem;
   line-height: 1;
+}
+
+.score-mark .mark-icon {
+  width: 1em;
+  height: 1em;
 }
 
 .vs-label {

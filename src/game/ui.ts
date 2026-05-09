@@ -1,4 +1,4 @@
-import type { GameState } from './types';
+import type { GameState, Mark } from './types';
 import {
   initialGameState,
   applyMove,
@@ -32,6 +32,21 @@ function escapeHtml(value: string): string {
     '>': '&gt;',
     '"': '&quot;',
   })[char] ?? char);
+}
+
+function iconSvg(name: 'back' | 'reset' | Mark, className = 'icon'): string {
+  const paths = {
+    back: '<path d="M14.5 5.5 8 12l6.5 6.5"/><path d="M8.75 12H20"/>',
+    reset: '<path d="M20 6v5h-5"/><path d="M19.25 11A7.5 7.5 0 1 0 17 16.3"/>',
+    X: '<path d="M6.5 6.5 17.5 17.5"/><path d="M17.5 6.5 6.5 17.5"/>',
+    O: '<circle cx="12" cy="12" r="6.5"/>',
+  };
+
+  return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[name]}</svg>`;
+}
+
+function renderMarkIcon(mark: Mark): string {
+  return iconSvg(mark, `icon mark-icon mark-icon-${mark}`);
 }
 
 function render() {
@@ -68,7 +83,7 @@ function updateGameScreen() {
     const isWinCell = winLine.includes(i);
     const shouldDisable = phase !== 'playing' || cell !== null;
 
-    btn.textContent = mark === 'O' ? '○' : mark;
+    btn.innerHTML = mark ? renderMarkIcon(mark) : '';
     btn.className = `cell${mark ? ` mark-${mark}` : ''}${isWinCell ? ' win-cell' : ''}`;
     btn.disabled = shouldDisable;
     btn.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
@@ -115,7 +130,7 @@ function renderSetupScreen(): string {
       <form class="setup-form" id="setup-form" novalidate>
         <div class="field player-input player-input-x">
           <label class="sr-only" for="player-x">Nombre del jugador 1</label>
-          <span class="input-mark mark-X" aria-hidden="true">×</span>
+          <span class="input-mark mark-X" aria-hidden="true">${renderMarkIcon('X')}</span>
           <input
             id="player-x"
             type="text"
@@ -129,7 +144,7 @@ function renderSetupScreen(): string {
         </div>
         <div class="field player-input player-input-o">
           <label class="sr-only" for="player-o">Nombre del jugador 2</label>
-          <span class="input-mark mark-O" aria-hidden="true">○</span>
+          <span class="input-mark mark-O" aria-hidden="true">${renderMarkIcon('O')}</span>
           <input
             id="player-o"
             type="text"
@@ -143,8 +158,8 @@ function renderSetupScreen(): string {
         </div>
 
         <div class="hero-marks" aria-hidden="true">
-          <span class="hero-x">×</span>
-          <span class="hero-o">○</span>
+          <span class="hero-x">${renderMarkIcon('X')}</span>
+          <span class="hero-o">${renderMarkIcon('O')}</span>
         </div>
 
         <div class="setup-actions">
@@ -199,7 +214,7 @@ function renderGameScreen(): string {
       data-index="${i}"
       ${disabled}
       aria-label="Celda ${i + 1}${mark ? `: ${mark}` : ', vacía'}"
-    >${mark === 'O' ? '○' : mark}</button>`;
+    >${mark ? renderMarkIcon(mark) : ''}</button>`;
   }).join('');
 
   const currentName = players[currentTurn];
@@ -210,7 +225,7 @@ function renderGameScreen(): string {
       <div class="ambient ambient-secondary" aria-hidden="true"></div>
 
       <header class="game-header">
-        <button class="btn btn-back" id="new-game-btn" aria-label="Volver al menu inicial">←</button>
+        <button class="btn btn-back" id="new-game-btn" aria-label="Volver al menu inicial">${iconSvg('back')}</button>
         <div class="turn-indicator mark-${currentTurn}" aria-live="polite">
           ${phase === 'playing' ? `<span class="turn-prefix">Turno de</span><span class="turn-name">${escapeHtml(currentName)}</span>` : ''}
         </div>
@@ -225,17 +240,17 @@ function renderGameScreen(): string {
         <div class="score-row" aria-label="Marcador">
           <div class="score-card score-card-x${currentTurn === 'X' && phase === 'playing' ? ' active' : ''}" data-player="X">
             <span class="score-label">${safePlayers.X}</span>
-            <span class="score-mark mark-X" aria-hidden="true">×</span>
+            <span class="score-mark mark-X" aria-hidden="true">${renderMarkIcon('X')}</span>
           </div>
           <span class="vs-label" aria-hidden="true">vs</span>
           <div class="score-card score-card-o${currentTurn === 'O' && phase === 'playing' ? ' active' : ''}" data-player="O">
             <span class="score-label">${safePlayers.O}</span>
-            <span class="score-mark mark-O" aria-hidden="true">○</span>
+            <span class="score-mark mark-O" aria-hidden="true">${renderMarkIcon('O')}</span>
           </div>
         </div>
 
         <div class="game-actions">
-          <button class="btn btn-fab" id="reset-btn" aria-label="Reiniciar partida">↻</button>
+          <button class="btn btn-fab" id="reset-btn" aria-label="Reiniciar partida">${iconSvg('reset')}</button>
           <button class="btn btn-ghost sound-toggle" id="sound-toggle" aria-label="${soundEnabled ? 'Desactivar sonido' : 'Activar sonido'}">
             ${soundEnabled ? 'Sonido activado' : 'Sonido desactivado'}
           </button>
