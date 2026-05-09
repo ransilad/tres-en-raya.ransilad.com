@@ -41,7 +41,7 @@ The system SHALL allow a second player to join an existing waiting room from ano
 - **THEN** the system prevents joining and displays a Spanish error message that explains the room cannot be used
 
 ### Requirement: Realtime board synchronization
-The system SHALL use Supabase Realtime to synchronize the board, current turn, players, phase, and result between both devices in an online match.
+The system SHALL use Supabase Broadcast to synchronize the board, current turn, players, phase, and result between both devices in an online match. The `rooms` table remains the authoritative source of truth and SHALL be updated on every state change; Broadcast propagates the update to the opponent in real time.
 
 #### Scenario: Player makes online move
 - **WHEN** the active online player selects an empty cell and the move is accepted
@@ -50,6 +50,10 @@ The system SHALL use Supabase Realtime to synchronize the board, current turn, p
 #### Scenario: Remote state changes
 - **WHEN** the authoritative online room state changes from another device
 - **THEN** the local UI updates to match that room state without requiring a page reload
+
+#### Scenario: Broadcast delivers update faster than Postgres Realtime
+- **WHEN** the active player emits a `room_update` Broadcast event after updating `rooms`
+- **THEN** the opponent's UI applies the new state upon receiving the Broadcast event, without waiting for a Postgres WAL notification
 
 ### Requirement: Public client configuration
 The system SHALL connect to Supabase from browser code using only public environment variables and MUST NOT expose or require the Supabase `service_role` key.

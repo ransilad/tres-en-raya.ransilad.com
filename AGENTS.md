@@ -51,7 +51,7 @@ public/
 - Supabase env vars are public-only: `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY` or `PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never commit real keys. Never expose `service_role`.
 - Supabase project URL currently documented as `https://rudyxhxefkqaowbndlom.supabase.co`.
 - Supabase schema/RLS lives in `supabase/migrations/20260509123000_create_rooms.sql`. Realtime must be enabled for `rooms`.
-- Online sync should primarily use Supabase Realtime. Avoid continuous polling; if a fallback is needed, keep it bounded and guard against stale `updated_at` snapshots.
+- Online sync uses **Supabase Realtime Broadcast exclusively** (channel name: `` `room:${code}` ``, event: `room_update`, payload: full room snapshot). No continuous polling. A single `fetchOnlineRoom` HTTP call is allowed only in two cases: (1) on page load to restore an existing session, (2) as a one-shot fallback when the WebSocket channel emits `channel_error` or `closed`. Never add `setInterval` or recurring polling.
 - Online UX conventions: local move is optimistic, `Volver al menu` is optimistic and sets room `abandoned`, either player can trigger rematch and it resets the board for both.
 - Sound uses Web Audio API only — no audio files. No audio library dependency.
 - Service worker cache name is `"tres-en-raya-v4"` in `public/sw.js`. Rename on breaking cache changes or public cached asset changes.

@@ -16,13 +16,16 @@ import { playSound } from './audio';
 import { applyOnlineMove, mapRoomToGameView } from './online/logic';
 import { getSupabaseClient, isSupabaseConfigured } from './online/supabase';
 import {
+  broadcastCurrentRoomUpdate,
   createOnlineRoom,
   fetchOnlineRoom,
   joinOnlineRoom,
   leaveOnlineRoom,
   requestOnlineRematch,
+  setRoomChannel,
   submitOnlineMove,
-  subscribeToOnlineRoom,
+  subscribeToRoomBroadcast,
+  type RoomBroadcastStatus,
 } from './online/rooms';
 import type { OnlineClientState, OnlineRoomRecord } from './online/types';
 
@@ -36,7 +39,6 @@ let setupMode: SetupMode = 'local';
 let setupMessage = '';
 let setupLoading = false;
 let roomChannel: RealtimeChannel | null = null;
-let roomSyncTimer: number | null = null;
 
 // ---- DOM Helpers ----
 
@@ -622,7 +624,7 @@ async function playAgain() {
 async function leaveCurrentOnlineRoom() {
   if (isOnlineState(state)) {
     const { room, session } = state;
-    void leaveOnlineRoom(room, session);
+    await leaveOnlineRoom(room, session);
   }
 
   cleanupRoomSubscription();
@@ -637,13 +639,24 @@ async function leaveCurrentOnlineRoom() {
 function subscribeToCurrentRoom() {
   if (!isOnlineState(state)) return;
   cleanupRoomSubscription();
-  const subscription = subscribeToOnlineRoom(state.room.code, (room) => {
-    applyIncomingOnlineRoom(room);
-  });
+  const subscription = subscribeToRoomBroadcast(
+    state.room.code,
+    (room) => {
+      applyIncomingOnlineRoom(room);
+    },
+    (status: RoomBroadcastStatus) => {
+      if (status === 'channel_error' || status === 'closed') {
+        void pollCurrentRoom();
+      }
+    },
+    () => {
+      if (isOnlineState(state) && state.room.status === 'playing') {
+        broadcastCurrentRoomUpdate(state.room);
+      }
+    },
+  );
   roomChannel = subscription.channel;
-  roomSyncTimer = window.setTimeout(() => {
-    void pollCurrentRoom();
-  }, 1500);
+  setRoomChannel(subscription.channel);
 }
 
 function cleanupRoomSubscription() {
@@ -651,10 +664,7 @@ function cleanupRoomSubscription() {
     void getSupabaseClient().removeChannel(roomChannel);
     roomChannel = null;
   }
-  if (roomSyncTimer !== null) {
-    window.clearTimeout(roomSyncTimer);
-    roomSyncTimer = null;
-  }
+  setRoomChannel(null);
 }
 
 async function pollCurrentRoom() {
@@ -688,6 +698,7 @@ function applyIncomingOnlineRoom(room: OnlineRoomRecord) {
     setupMode = 'local';
     setupLoading = false;
     setupMessage = 'Tu rival volvió al menú.';
+    hideResultModal();
     render();
     return;
   }

@@ -99,8 +99,10 @@ export async function joinOnlineRoom(roomCode: string, playerName: string): Prom
 
   if (updateError || !updated) throw new Error('No pudimos unirnos a la sala.');
 
+  const updatedRoom = toRoomRecord(updated);
+
   return {
-    room: toRoomRecord(updated),
+    room: updatedRoom,
     session: createOnlineSession(code, 'O', name, playerToken),
   };
 }
@@ -128,7 +130,9 @@ export async function submitOnlineMove(room: OnlineRoomRecord, session: OnlineSe
     .single();
 
   if (error || !data) throw new Error('No pudimos enviar tu movimiento.');
-  return toRoomRecord(data);
+  const updatedRoom = toRoomRecord(data);
+  broadcastCurrentRoomUpdate(updatedRoom);
+  return updatedRoom;
 }
 
 export async function leaveOnlineRoom(room: OnlineRoomRecord, session: OnlineSession): Promise<void> {
@@ -146,6 +150,11 @@ export async function leaveOnlineRoom(room: OnlineRoomRecord, session: OnlineSes
     .from('rooms')
     .update({ status: 'abandoned', players })
     .eq('code', room.code);
+
+  const { data: fetchData } = await getSupabaseClient().from('rooms').select(ROOM_SELECT).eq('code', room.code).single();
+  if (fetchData) {
+    broadcastCurrentRoomUpdate(toRoomRecord(fetchData));
+  }
 }
 
 export async function requestOnlineRematch(room: OnlineRoomRecord, session: OnlineSession): Promise<OnlineRoomRecord> {
@@ -160,26 +169,68 @@ export async function requestOnlineRematch(room: OnlineRoomRecord, session: Onli
     .single();
 
   if (error || !data) throw new Error('No pudimos preparar la revancha.');
-  return toRoomRecord(data);
+  const updatedRoom = toRoomRecord(data);
+  broadcastCurrentRoomUpdate(updatedRoom);
+  return updatedRoom;
 }
 
-export function subscribeToOnlineRoom(roomCode: string, onChange: (room: OnlineRoomRecord) => void): RoomSubscription {
+export type RoomBroadcastStatus = 'subscribed' | 'channel_error' | 'closed';
+
+export type BroadcastSubscription = {
+  channel: RealtimeChannel;
+  unsubscribe: () => void;
+};
+
+let currentRoomChannel: RealtimeChannel | null = null;
+
+export function setRoomChannel(channel: RealtimeChannel | null): void {
+  currentRoomChannel = channel;
+}
+
+export function broadcastRoomEvent(channel: RealtimeChannel, room: OnlineRoomRecord): void {
+  channel.send({
+    type: 'broadcast',
+    event: 'room_update',
+    payload: room,
+  });
+}
+
+export function broadcastCurrentRoomUpdate(room: OnlineRoomRecord): void {
+  if (currentRoomChannel) {
+    broadcastRoomEvent(currentRoomChannel, room);
+  }
+}
+
+export function subscribeToRoomBroadcast(
+  roomCode: string,
+  onChange: (room: OnlineRoomRecord) => void,
+  onStatusChange?: (status: RoomBroadcastStatus) => void,
+  onSubscribed?: (channel: RealtimeChannel) => void,
+): BroadcastSubscription {
   const code = normalizeRoomCode(roomCode);
-  const channel = getSupabaseClient()
-    .channel(`room:${code}`)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'rooms', filter: `code=eq.${code}` },
-      (payload) => {
-        if (payload.new) onChange(toRoomRecord(payload.new));
-      },
-    )
-    .subscribe();
+  const client = getSupabaseClient();
+
+  const channel = client.channel(`room:${code}`);
+
+  channel.on('broadcast', { event: 'room_update' }, (payload) => {
+    if (payload.payload) onChange(toRoomRecord(payload.payload));
+  });
+
+  channel.subscribe((status) => {
+    if (status === 'SUBSCRIBED') {
+      onStatusChange?.('subscribed');
+      onSubscribed?.(channel);
+    } else if (status === 'CHANNEL_ERROR') {
+      onStatusChange?.('channel_error');
+    } else if (status === 'CLOSED') {
+      onStatusChange?.('closed');
+    }
+  });
 
   return {
     channel,
     unsubscribe: () => {
-      void getSupabaseClient().removeChannel(channel);
+      void client.removeChannel(channel);
     },
   };
 }
