@@ -48,7 +48,11 @@ html {
 
 body {
   min-height: 100dvh;
-  background: var(--background);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 178, 185, 0.12), transparent 28vw),
+    radial-gradient(circle at 88% 10%, rgba(138, 235, 255, 0.14), transparent 30vw),
+    radial-gradient(circle at 50% 96%, rgba(34, 211, 238, 0.08), transparent 34vw),
+    linear-gradient(180deg, #060e20 0%, var(--background) 48%, #070b18 100%);
   color: var(--on-surface);
   font-family: var(--font);
   overflow-x: hidden;
@@ -85,6 +89,31 @@ input:disabled {
   animation: screenFadeIn 220ms ease;
 }
 
+.screen::before,
+.screen::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.screen::before {
+  background:
+    linear-gradient(rgba(138, 235, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(138, 235, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 78%);
+}
+
+.screen::after {
+  background:
+    linear-gradient(128deg, transparent 0 35%, rgba(255, 178, 185, 0.08) 35.2%, transparent 36.4%),
+    linear-gradient(52deg, transparent 0 58%, rgba(138, 235, 255, 0.09) 58.2%, transparent 59.4%),
+    radial-gradient(circle at 50% 42%, transparent 0 140px, rgba(138, 235, 255, 0.035) 141px 142px, transparent 143px);
+  opacity: 0.9;
+}
+
 @keyframes screenFadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
@@ -98,7 +127,7 @@ input:disabled {
   height: min(45vw, 360px);
   border-radius: 9999px;
   filter: blur(120px);
-  opacity: 0.035;
+  opacity: 0.11;
 }
 
 .ambient-primary {
@@ -226,28 +255,20 @@ input:focus-visible,
   max-width: 360px;
 }
 
-.game-title {
-  color: var(--primary);
-  font-size: clamp(1.65rem, 8vw, 2rem);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-}
-
 .subtitle {
-  margin-top: var(--gap-sm);
   color: var(--on-surface-variant);
   font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .setup-form {
   width: 100%;
   max-width: 420px;
-  min-height: min(72dvh, 640px);
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--gap-md);
 }
 
 .mode-tabs,
@@ -350,7 +371,6 @@ input:focus-visible,
 
 .player-input {
   position: relative;
-  margin-bottom: 8px;
 }
 
 .input-mark {
@@ -370,14 +390,12 @@ input:focus-visible,
 }
 
 .mark-X,
-.mark-X.input-mark,
-.hero-x {
+.mark-X.input-mark {
   color: var(--primary);
 }
 
 .mark-O,
-.mark-O.input-mark,
-.hero-o {
+.mark-O.input-mark {
   color: var(--secondary);
 }
 
@@ -409,44 +427,16 @@ input:focus-visible,
 
 .field-error {
   display: block;
+  width: 100%;
   min-height: 1rem;
-  padding: 4px 8px 0 64px;
+  padding: 4px 8px 0;
   color: var(--error);
   font-size: 0.75rem;
+  text-align: left;
 }
 
 .field-error:empty {
   display: none;
-}
-
-.hero-marks {
-  position: relative;
-  width: 192px;
-  height: 192px;
-  margin: auto 0 var(--gap-lg);
-  opacity: 0.23;
-}
-
-.hero-marks span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  font-size: 8.5rem;
-  font-weight: 400;
-  line-height: 1;
-}
-
-.hero-marks .mark-icon {
-  width: 1em;
-  height: 1em;
-}
-
-.hero-x {
-  transform: translate(-72%, -60%);
-}
-
-.hero-o {
-  transform: translate(-30%, -40%);
 }
 
 .setup-actions {
@@ -455,6 +445,7 @@ input:focus-visible,
   flex-direction: column;
   align-items: center;
   gap: var(--gap-md);
+  margin-top: 10px;
 }
 
 /* Game screen */
@@ -767,16 +758,7 @@ input:focus-visible,
   }
 
   .setup-form {
-    min-height: min(74dvh, 620px);
-  }
-
-  .hero-marks {
-    width: 160px;
-    height: 160px;
-  }
-
-  .hero-marks span {
-    font-size: 7rem;
+    gap: 12px;
   }
 
   .game-screen {
@@ -800,10 +782,6 @@ input:focus-visible,
 
   .game-screen {
     gap: 44px;
-  }
-
-  .setup-form {
-    min-height: 640px;
   }
 
   .board {

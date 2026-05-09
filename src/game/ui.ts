@@ -196,7 +196,6 @@ function renderSetupScreen(): string {
       <div class="ambient ambient-secondary" aria-hidden="true"></div>
 
       <header class="setup-identity">
-        <h1 class="game-title">TRES EN RAYA</h1>
         <p class="subtitle">Elige cómo quieres jugar</p>
       </header>
 
@@ -228,7 +227,6 @@ function renderLocalSetupForm(): string {
         <input id="player-o" type="text" maxlength="20" placeholder="Nombre del jugador 2" autocomplete="off" aria-required="true" aria-describedby="error-o" />
         <span class="field-error" id="error-o" aria-live="polite"></span>
       </div>
-      ${renderHeroMarks()}
       <div class="setup-actions"><button type="submit" class="btn btn-primary">Comenzar</button></div>
     </form>
   `;
@@ -255,20 +253,10 @@ function renderOnlineSetupForm(): string {
         </div>
       ` : ''}
       <span class="field-error" id="online-error" aria-live="polite"></span>
-      ${renderHeroMarks()}
       <div class="setup-actions">
         <button type="submit" class="btn btn-primary" ${setupLoading ? 'disabled' : ''}>${setupLoading ? (isJoin ? 'Uniendo...' : 'Creando...') : (isJoin ? 'Unirse' : 'Crear sala')}</button>
       </div>
     </form>
-  `;
-}
-
-function renderHeroMarks(): string {
-  return `
-    <div class="hero-marks" aria-hidden="true">
-      <span class="hero-x">${renderMarkIcon('X')}</span>
-      <span class="hero-o">${renderMarkIcon('O')}</span>
-    </div>
   `;
 }
 
@@ -382,14 +370,12 @@ function renderOnlineLobby(): string {
       <div class="ambient ambient-primary" aria-hidden="true"></div>
       <div class="ambient ambient-secondary" aria-hidden="true"></div>
       <header class="setup-identity">
-        <h1 class="game-title">SALA ${escapeHtml(state.room.code)}</h1>
         <p class="subtitle">Comparte este código con tu rival</p>
       </header>
       <div class="room-code-card" aria-label="Código de sala">${escapeHtml(state.room.code)}</div>
       <div class="lobby-disclaimer" role="status">
         <span>Estamos esperando que tu rival se una a la sala</span>
       </div>
-      ${renderHeroMarks()}
       <div class="setup-actions">
         <button type="button" class="btn btn-secondary" id="lobby-back-menu">Volver al menu</button>
       </div>
