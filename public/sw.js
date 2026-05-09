@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tres-en-raya-v3';
+const CACHE_NAME = 'tres-en-raya-v4';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -28,8 +28,37 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put('/', responseClone));
+          return response;
+        })
+        .catch(() => caches.match('/') ?? new Response('Offline', { status: 503 }))
+    );
+    return;
+  }
+
+  const url = new URL(event.request.url);
+  const isAstroAsset = url.pathname.startsWith('/_astro/');
+
+  if (isAstroAsset) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type === 'opaque') return response;
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => caches.match(event.request) ?? new Response('Offline', { status: 503 }))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {

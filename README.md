@@ -12,18 +12,18 @@ Juego retro de Tres en Raya para dos jugadores locales y modo online 1vs1, const
 - Tablero 3×3 con detección automática de victoria y empate
 - Indicador de turno en tiempo real
 - Modal de victoria con línea ganadora resaltada y efecto de sonido retro
-- Reinicio automático al empate, reinicio manual disponible en cualquier momento
-- Persistencia local — recarga la página y la partida sigue donde quedó
+- Reinicio automático al empate en modo local; revancha y salida sincronizadas en modo online
+- Persistencia local — recarga la página y la partida local sigue donde quedó
 - Control de sonido (activar/desactivar)
 - Tema oscuro retro, totalmente responsive (mobile, tablet, desktop)
-- PWA instalable y funciona offline tras la primera carga
+- PWA instalable con service worker network-first para HTML/assets de Astro y fallback offline
 - Multijugador online 1vs1 con salas temporales vía Supabase Realtime
 
 ## Stack
 
 | Capa | Tecnología |
 |---|---|
-| Framework | [Astro](https://astro.build) 4 — salida estática |
+| Framework | [Astro](https://astro.build) 6 — salida estática |
 | Lógica | TypeScript puro, sin framework de UI |
 | Estilos | CSS vanilla con variables (sin preprocesador) |
 | Audio | Web Audio API — sin archivos de audio |
@@ -50,7 +50,7 @@ src/
     logic.test.ts
     validation.test.ts
 public/
-  sw.js                    # Service worker (cache-first)
+  sw.js                    # Service worker (network-first para HTML/_astro)
   manifest.json            # PWA manifest
   favicon.svg, icon-*.svg
 ```
@@ -62,6 +62,12 @@ public/
 ```bash
 pnpm install
 pnpm dev        # http://localhost:4321
+```
+
+Para probar en otro dispositivo de la red local:
+
+```bash
+pnpm dev -- --host 0.0.0.0
 ```
 
 ## Comandos
@@ -83,11 +89,12 @@ pnpm check && pnpm test && pnpm build
 
 ## Tests
 
-Los tests cubren la lógica pura del juego y las utilidades de validación — sin dependencias de DOM.
+Los tests cubren la lógica pura del juego, helpers online y utilidades de validación — sin dependencias de DOM.
 
 ```
-src/tests/logic.test.ts       # 13 tests: movimientos, detección de victoria/empate, reset
-src/tests/validation.test.ts  # 12 tests: validación de nombres y estado persistido
+src/tests/logic.test.ts        # movimientos, detección de victoria/empate, reset
+src/tests/online-logic.test.ts # mapeo de sala online, turnos, rematch, expiración
+src/tests/validation.test.ts   # validación de nombres, estado local y sesión online
 ```
 
 ## Supabase
@@ -101,11 +108,25 @@ PUBLIC_SUPABASE_ANON_KEY=tu_clave_publica_anon_o_publishable
 
 La clave `service_role` es secreta y nunca debe usarse en frontend, variables `PUBLIC_`, ni archivos versionados.
 
+El modo online usa una tabla `rooms` con salas temporales, tokens por jugador, estado de tablero, turno, resultado, expiración y Realtime habilitado. La app usa Supabase Realtime y una sincronización puntual de respaldo al entrar a sala; no debe usarse polling continuo porque genera ruido de red y puede causar parpadeos.
+
 El schema de la tabla `rooms`, Realtime y RLS está en:
 
 ```text
 supabase/migrations/20260509123000_create_rooms.sql
 ```
+
+Las salas expiradas no se borran solas a menos que se programe limpieza. La migración incluye `public.delete_expired_rooms()`, que puede ejecutarse manualmente o programarse con `pg_cron`.
+
+## PWA y caché
+
+El service worker vive en `public/sw.js`. Actualmente usa cache `tres-en-raya-v4`.
+
+- Navegación/HTML: network-first
+- Assets `/_astro/`: network-first
+- Otros assets públicos: cache-first con fallback
+
+Cuando se cambie el comportamiento del service worker o assets públicos cacheados, subir el nombre de cache para evitar clientes pegados a versiones anteriores.
 
 ## Deploy
 
