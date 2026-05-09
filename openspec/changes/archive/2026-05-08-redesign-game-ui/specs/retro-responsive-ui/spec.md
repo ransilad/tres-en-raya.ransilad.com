@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Retro dark visual theme
 The system SHALL use the Lumina Games dark arcade visual theme from `prd/mockups/Inputs/DESIGN.md`, `prd/mockups/game/DESIGN.md`, and `prd/mockups/modal/DESIGN.md` as the base interface design, matching the committed mockups with deep navy backgrounds, cyan primary accents, pink/coral secondary mark accents, rounded cards, pill controls, soft glow effects, and legible high-contrast text.

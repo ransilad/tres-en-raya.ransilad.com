@@ -25,6 +25,15 @@ function qs<T extends HTMLElement>(selector: string, parent: Element | Document 
   return el;
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"]/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+  })[char] ?? char);
+}
+
 function render() {
   const app = qs<HTMLDivElement>('#app');
   if (!state || state.phase === 'setup') {
@@ -51,7 +60,6 @@ function updateGameScreen() {
   const { board, currentTurn, players, phase, soundEnabled, result } = state;
   const winLine: number[] = isWin(result) ? result.line : [];
 
-  // Update each cell in place
   document.querySelectorAll<HTMLButtonElement>('.cell').forEach((btn) => {
     const i = parseInt(btn.dataset['index'] ?? '-1', 10);
     if (i < 0) return;
@@ -60,33 +68,35 @@ function updateGameScreen() {
     const isWinCell = winLine.includes(i);
     const shouldDisable = phase !== 'playing' || cell !== null;
 
-    btn.textContent = mark;
+    btn.textContent = mark === 'O' ? '○' : mark;
     btn.className = `cell${mark ? ` mark-${mark}` : ''}${isWinCell ? ' win-cell' : ''}`;
     btn.disabled = shouldDisable;
     btn.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
     btn.setAttribute('aria-label', `Celda ${i + 1}${mark ? `: ${mark}` : ', vacía'}`);
   });
 
-  // Update turn indicator
   const turnEl = document.querySelector<HTMLElement>('.turn-indicator');
   if (turnEl) {
     const currentName = players[currentTurn];
-    turnEl.innerHTML = phase === 'playing' ? `Turno de <strong>${currentName}</strong>` : '';
+    turnEl.className = `turn-indicator mark-${currentTurn}`;
+    turnEl.innerHTML = phase === 'playing'
+      ? `<span class="turn-prefix">Turno de</span><span class="turn-name">${escapeHtml(currentName)}</span>`
+      : '';
   }
 
-  // Update player badge active classes
-  document.querySelectorAll<HTMLElement>('.player-badge').forEach((badge) => {
-    const isX = badge.querySelector('.mark-label.x') !== null;
+  document.querySelectorAll<HTMLElement>('.score-card').forEach((badge) => {
+    const isX = badge.dataset['player'] === 'X';
     const isActive = phase === 'playing' && (isX ? currentTurn === 'X' : currentTurn === 'O');
     badge.classList.toggle('active', isActive);
   });
 
-  // Update sound toggle
   const soundBtn = document.getElementById('sound-toggle');
   if (soundBtn) {
-    soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+    soundBtn.textContent = soundEnabled ? 'Sonido activado' : 'Sonido desactivado';
     soundBtn.setAttribute('aria-label', soundEnabled ? 'Desactivar sonido' : 'Activar sonido');
   }
+
+  if (phase === 'won') showWinModal();
 }
 
 // ---- Setup Screen ----
@@ -94,34 +104,52 @@ function updateGameScreen() {
 function renderSetupScreen(): string {
   return `
     <div class="screen setup-screen" role="main">
-      <h1 class="game-title">TRES EN RAYA</h1>
-      <p class="subtitle">— Juego Retro —</p>
+      <div class="ambient ambient-primary" aria-hidden="true"></div>
+      <div class="ambient ambient-secondary" aria-hidden="true"></div>
+
+      <header class="setup-identity">
+        <h1 class="game-title">TRES EN RAYA</h1>
+        <p class="subtitle">Ingresa los nombres para comenzar</p>
+      </header>
+
       <form class="setup-form" id="setup-form" novalidate>
-        <div class="field">
-          <label for="player-x">Jugador X</label>
+        <div class="field player-input player-input-x">
+          <label class="sr-only" for="player-x">Nombre del jugador 1</label>
+          <span class="input-mark mark-X" aria-hidden="true">×</span>
           <input
             id="player-x"
             type="text"
             maxlength="20"
-            placeholder="Nombre..."
+            placeholder="Nombre del jugador 1"
             autocomplete="off"
             aria-required="true"
+            aria-describedby="error-x"
           />
           <span class="field-error" id="error-x" aria-live="polite"></span>
         </div>
-        <div class="field">
-          <label for="player-o">Jugador O</label>
+        <div class="field player-input player-input-o">
+          <label class="sr-only" for="player-o">Nombre del jugador 2</label>
+          <span class="input-mark mark-O" aria-hidden="true">○</span>
           <input
             id="player-o"
             type="text"
             maxlength="20"
-            placeholder="Nombre..."
+            placeholder="Nombre del jugador 2"
             autocomplete="off"
             aria-required="true"
+            aria-describedby="error-o"
           />
           <span class="field-error" id="error-o" aria-live="polite"></span>
         </div>
-        <button type="submit" class="btn btn-primary">COMENZAR</button>
+
+        <div class="hero-marks" aria-hidden="true">
+          <span class="hero-x">×</span>
+          <span class="hero-o">○</span>
+        </div>
+
+        <div class="setup-actions">
+          <button type="submit" class="btn btn-primary">Comenzar</button>
+        </div>
       </form>
     </div>
   `;
@@ -160,6 +188,7 @@ function renderGameScreen(): string {
   if (!state) return '';
   const { board, currentTurn, players, phase, soundEnabled, result } = state;
   const winLine: number[] = isWin(result) ? result.line : [];
+  const safePlayers = { X: escapeHtml(players.X), O: escapeHtml(players.O) };
 
   const cells = board.map((cell, i) => {
     const isWinCell = winLine.includes(i);
@@ -170,51 +199,55 @@ function renderGameScreen(): string {
       data-index="${i}"
       ${disabled}
       aria-label="Celda ${i + 1}${mark ? `: ${mark}` : ', vacía'}"
-    >${mark}</button>`;
+    >${mark === 'O' ? '○' : mark}</button>`;
   }).join('');
 
   const currentName = players[currentTurn];
 
   return `
     <div class="screen game-screen" role="main">
-      <header class="game-header">
-        <h1 class="game-title-sm">TRES EN RAYA</h1>
-        <div class="header-controls">
-          <button class="btn btn-icon sound-toggle" id="sound-toggle" aria-label="${soundEnabled ? 'Desactivar sonido' : 'Activar sonido'}">
-            ${soundEnabled ? '🔊' : '🔇'}
-          </button>
-        </div>
-      </header>
+      <div class="ambient ambient-primary" aria-hidden="true"></div>
+      <div class="ambient ambient-secondary" aria-hidden="true"></div>
 
-      <div class="players-bar">
-        <div class="player-badge${currentTurn === 'X' && phase === 'playing' ? ' active' : ''}">
-          <span class="mark-label x">X</span>
-          <span class="player-name">${players.X}</span>
+      <header class="game-header">
+        <button class="btn btn-back" id="new-game-btn" aria-label="Volver al menu inicial">←</button>
+        <div class="turn-indicator mark-${currentTurn}" aria-live="polite">
+          ${phase === 'playing' ? `<span class="turn-prefix">Turno de</span><span class="turn-name">${escapeHtml(currentName)}</span>` : ''}
         </div>
-        <div class="turn-indicator" aria-live="polite">
-          ${phase === 'playing' ? `Turno de <strong>${currentName}</strong>` : ''}
-        </div>
-        <div class="player-badge${currentTurn === 'O' && phase === 'playing' ? ' active' : ''}">
-          <span class="mark-label o">O</span>
-          <span class="player-name">${players.O}</span>
-        </div>
-      </div>
+        <div class="turn-underline" aria-hidden="true"></div>
+      </header>
 
       <div class="board" role="grid" aria-label="Tablero de juego">
         ${cells}
       </div>
 
-      <div class="game-actions">
-        <button class="btn btn-secondary" id="reset-btn">REINICIAR</button>
-        <button class="btn btn-ghost" id="new-game-btn">NUEVO JUEGO</button>
-      </div>
+      <footer class="game-footer">
+        <div class="score-row" aria-label="Marcador">
+          <div class="score-card score-card-x${currentTurn === 'X' && phase === 'playing' ? ' active' : ''}" data-player="X">
+            <span class="score-label">${safePlayers.X}</span>
+            <span class="score-mark mark-X" aria-hidden="true">×</span>
+          </div>
+          <span class="vs-label" aria-hidden="true">vs</span>
+          <div class="score-card score-card-o${currentTurn === 'O' && phase === 'playing' ? ' active' : ''}" data-player="O">
+            <span class="score-label">${safePlayers.O}</span>
+            <span class="score-mark mark-O" aria-hidden="true">○</span>
+          </div>
+        </div>
+
+        <div class="game-actions">
+          <button class="btn btn-fab" id="reset-btn" aria-label="Reiniciar partida">↻</button>
+          <button class="btn btn-ghost sound-toggle" id="sound-toggle" aria-label="${soundEnabled ? 'Desactivar sonido' : 'Activar sonido'}">
+            ${soundEnabled ? 'Sonido activado' : 'Sonido desactivado'}
+          </button>
+        </div>
+      </footer>
 
       <div id="win-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Resultado de la partida">
         <div class="modal-content">
-          <div class="modal-icon">🏆</div>
+          <div class="modal-icon" aria-hidden="true">♕</div>
           <h2 class="modal-title" id="modal-title"></h2>
-          <p class="modal-subtitle" id="modal-subtitle"></p>
-          <button class="btn btn-primary" id="modal-play-again">JUGAR DE NUEVO</button>
+          <button class="btn btn-primary" id="modal-play-again">Jugar de nuevo</button>
+          <button class="btn btn-secondary" id="modal-back-menu">Volver al menu</button>
         </div>
       </div>
     </div>
@@ -226,26 +259,16 @@ function showWinModal() {
   const modal = document.getElementById('win-modal');
   if (!modal) return;
   const titleEl = document.getElementById('modal-title');
-  const subtitleEl = document.getElementById('modal-subtitle');
-  if (!titleEl || !subtitleEl) return;
+  if (!titleEl) return;
 
   const result = state.result;
   if (isWin(result)) {
     const winnerName = state.players[result.winner];
     titleEl.textContent = `¡${winnerName} gana!`;
-    subtitleEl.textContent = `¡Felicitaciones ${winnerName}!`;
   }
 
   modal.classList.remove('hidden');
   modal.classList.add('visible');
-
-  document.getElementById('modal-play-again')?.addEventListener('click', () => {
-    modal.classList.remove('visible');
-    modal.classList.add('hidden');
-    state = resetBoard(state!);
-    saveState(state);
-    render();
-  });
 }
 
 function bindGameEvents() {
@@ -273,7 +296,6 @@ function bindGameEvents() {
       if (nextPhase === 'won') {
         playSound('win', state.soundEnabled);
         render();
-        setTimeout(() => showWinModal(), 50);
       } else if (nextPhase === 'draw') {
         playSound('draw', state.soundEnabled);
         render();
@@ -304,8 +326,21 @@ function bindGameEvents() {
     render();
   });
 
-  // New game → go back to setup
   document.getElementById('new-game-btn')?.addEventListener('click', () => {
+    state = null;
+    saveState(null);
+    render();
+  });
+
+  document.getElementById('modal-play-again')?.addEventListener('click', () => {
+    if (!state) return;
+    document.getElementById('win-modal')?.classList.add('hidden');
+    state = resetBoard(state);
+    saveState(state);
+    render();
+  });
+
+  document.getElementById('modal-back-menu')?.addEventListener('click', () => {
     state = null;
     saveState(null);
     render();

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#ff97a3",
+                        "primary": "#8aebff",
+                        "outline-variant": "#3c494c",
+                        "surface-container": "#171f33",
+                        "surface-container-highest": "#2d3449",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#891933",
+                        "primary-container": "#22d3ee",
+                        "secondary-fixed": "#ffdadc",
+                        "surface-container-lowest": "#060e20",
+                        "inverse-primary": "#006877",
+                        "background": "#0b1326",
+                        "inverse-on-surface": "#283044",
+                        "surface-variant": "#2d3449",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "on-secondary-fixed-variant": "#891933",
+                        "on-surface": "#dae2fd",
+                        "primary-fixed": "#a2eeff",
+                        "on-tertiary-container": "#444f63",
+                        "on-background": "#dae2fd",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#bbc9cd",
+                        "on-error-container": "#ffdad6",
+                        "surface-tint": "#2fd9f4",
+                        "surface-container-low": "#131b2e",
+                        "on-primary-fixed": "#001f25",
+                        "on-secondary-fixed": "#400010",
+                        "on-tertiary": "#263143",
+                        "on-primary": "#00363e",
+                        "surface": "#0b1326",
+                        "on-primary-fixed-variant": "#004e5a",
+                        "inverse-surface": "#dae2fd",
+                        "secondary": "#ffb2b9",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "on-tertiary-fixed": "#111c2d",
+                        "tertiary-fixed": "#d8e3fb",
+                        "surface-bright": "#31394d",
+                        "on-secondary": "#67001f",
+                        "tertiary-container": "#b6c1d9",
+                        "secondary-fixed-dim": "#ffb2b9",
+                        "outline": "#859397",
+                        "error-container": "#93000a",
+                        "tertiary": "#d2ddf5",
+                        "on-primary-container": "#005763",
+                        "surface-container-high": "#222a3d",
+                        "surface-dim": "#0b1326",
+                        "primary-fixed-dim": "#2fd9f4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap-sm": "8px",
+                        "grid-gap": "12px",
+                        "container-padding": "24px",
+                        "stack-gap-md": "16px",
+                        "stack-gap-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Outfit"],
+                        "headline-lg": ["Outfit"],
+                        "headline-md": ["Outfit"],
+                        "label-caps": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "stat-value": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "stat-value": ["28px", {"lineHeight": "1", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0b1326;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-background bg-background min-h-screen flex flex-col items-center justify-center">
+<!-- Content Canvas -->
+<main class="w-full max-w-md px-container-padding flex flex-col items-center justify-between min-h-[707px]">
+<!-- Identity Section -->
+<div class="w-full text-center mt-stack-gap-lg">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight mb-stack-gap-sm">TIC-TAC-TOE</h1>
+<p class="font-body-md text-on-surface-variant">Enter names to begin the battle</p>
+</div>
+<!-- Input Section -->
+<div class="w-full flex flex-col gap-stack-gap-md py-stack-gap-lg">
+<!-- Player 1 Input -->
+<div class="relative group">
+<div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="close">close</span>
+</div>
+<input class="w-full pl-16 pr-6 py-5 bg-surface-container border-none rounded-xl font-body-lg text-body-lg text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary transition-all outline-none" placeholder="Player 1 Name" type="text"/>
+</div>
+<!-- Player 2 Input -->
+<div class="relative group">
+<div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[32px]" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+<input class="w-full pl-16 pr-6 py-5 bg-surface-container border-none rounded-xl font-body-lg text-body-lg text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-secondary transition-all outline-none" placeholder="Player 2 Name" type="text"/>
+</div>
+</div>
+<!-- Visual Anchor (Game Piece Illustration Placeholder) -->
+<div class="w-full flex justify-center py-stack-gap-md">
+<div class="relative w-48 h-48 flex items-center justify-center opacity-20">
+<span class="material-symbols-outlined text-[120px] text-primary absolute -translate-x-8 -translate-y-4" data-icon="close">close</span>
+<span class="material-symbols-outlined text-[120px] text-secondary absolute translate-x-8 translate-y-4" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+</div>
+<!-- Action Section -->
+<div class="w-full flex flex-col items-center gap-stack-gap-md mt-auto mb-stack-gap-lg">
+<button class="w-3/4 py-4 bg-primary text-on-primary font-headline-md text-headline-md rounded-full shadow-lg active:scale-95 transition-transform">
+                START GAME
+            </button>
+<!-- Secondary Actions -->
+<div class="flex gap-stack-gap-lg mt-stack-gap-sm">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="history">history</span>
+<span class="font-label-caps text-label-caps">HISTORY</span>
+</button>
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps">SETTINGS</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Visual Background Element -->
+<div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+<div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary opacity-[0.03] blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary opacity-[0.03] blur-[120px] rounded-full"></div>
+</div>
+</body></html>
