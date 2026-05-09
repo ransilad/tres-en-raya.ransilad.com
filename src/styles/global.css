@@ -209,6 +209,7 @@ input:focus-visible,
   align-items: center;
   justify-content: center;
   padding: var(--gap-lg) var(--container-padding);
+  animation: none;
 }
 
 .setup-identity {
