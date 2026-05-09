@@ -49,10 +49,10 @@ html {
 body {
   min-height: 100dvh;
   background:
-    radial-gradient(circle at 12% 18%, rgba(255, 178, 185, 0.12), transparent 28vw),
-    radial-gradient(circle at 88% 10%, rgba(138, 235, 255, 0.14), transparent 30vw),
-    radial-gradient(circle at 50% 96%, rgba(34, 211, 238, 0.08), transparent 34vw),
-    linear-gradient(180deg, #060e20 0%, var(--background) 48%, #070b18 100%);
+    radial-gradient(circle at 16% 16%, rgba(255, 178, 185, 0.16), transparent 24vw),
+    radial-gradient(circle at 84% 12%, rgba(138, 235, 255, 0.15), transparent 26vw),
+    radial-gradient(circle at 50% 108%, rgba(34, 211, 238, 0.1), transparent 42vw),
+    linear-gradient(180deg, #050817 0%, #0b1326 52%, #060915 100%);
   color: var(--on-surface);
   font-family: var(--font);
   overflow-x: hidden;
@@ -100,18 +100,21 @@ input:disabled {
 
 .screen::before {
   background:
-    linear-gradient(rgba(138, 235, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(138, 235, 255, 0.045) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse at center, black 0%, transparent 78%);
+    linear-gradient(rgba(138, 235, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(138, 235, 255, 0.026) 1px, transparent 1px);
+  background-size: 48px 48px, 48px 48px;
+  mask-image: linear-gradient(180deg, transparent 0%, black 12%, black 78%, transparent 100%);
 }
 
 .screen::after {
   background:
-    linear-gradient(128deg, transparent 0 35%, rgba(255, 178, 185, 0.08) 35.2%, transparent 36.4%),
-    linear-gradient(52deg, transparent 0 58%, rgba(138, 235, 255, 0.09) 58.2%, transparent 59.4%),
-    radial-gradient(circle at 50% 42%, transparent 0 140px, rgba(138, 235, 255, 0.035) 141px 142px, transparent 143px);
-  opacity: 0.9;
+    radial-gradient(circle at 14% 28%, rgba(218, 226, 253, 0.18) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 28% 72%, rgba(138, 235, 255, 0.16) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 74% 34%, rgba(255, 178, 185, 0.16) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 86% 78%, rgba(218, 226, 253, 0.14) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.055), transparent 32vw);
+  background-size: 180px 180px, 220px 220px, 190px 190px, 240px 240px, auto;
+  opacity: 0.8;
 }
 
 @keyframes screenFadeIn {
@@ -255,7 +258,20 @@ input:focus-visible,
   max-width: 360px;
 }
 
+.game-title {
+  color: var(--primary);
+  font-size: clamp(2.65rem, 12vw, 5.25rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 22px rgba(138, 235, 255, 0.18),
+    0 18px 44px rgba(0, 0, 0, 0.35);
+}
+
 .subtitle {
+  margin-top: var(--gap-md);
   color: var(--on-surface-variant);
   font-size: 0.875rem;
   letter-spacing: 0.08em;
@@ -288,13 +304,24 @@ input:focus-visible,
 .mode-tab {
   min-height: 44px;
   border-radius: var(--radius-full);
-  background: var(--surface-container-low);
+  border: 1px solid rgba(138, 235, 255, 0.1);
+  background: rgba(19, 27, 46, 0.86);
   color: var(--on-surface-variant);
   font-size: 0.78rem;
   letter-spacing: 0.08em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025),
+    0 16px 34px -30px rgba(0, 0, 0, 0.85);
+}
+
+.mode-tab:hover:not(:disabled):not(.active) {
+  border-color: rgba(138, 235, 255, 0.2);
+  background: rgba(23, 31, 51, 0.96);
+  color: var(--on-surface);
 }
 
 .mode-tab.active {
+  border-color: transparent;
   background: var(--primary);
   color: var(--on-primary);
   box-shadow: 0 16px 32px -18px var(--shadow-primary);
@@ -402,12 +429,15 @@ input:focus-visible,
 .field input {
   width: 100%;
   min-height: 54px;
-  border: 0;
+  border: 1px solid rgba(138, 235, 255, 0.12);
   border-radius: var(--radius-xl);
-  background: var(--surface-container);
+  background: rgba(19, 27, 46, 0.94);
   color: var(--on-surface);
   font-size: 16px;
   padding: 0 24px 0 64px;
+  box-shadow:
+    0 18px 40px -28px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
   transition: box-shadow var(--transition), background var(--transition);
 }
 
@@ -416,13 +446,19 @@ input:focus-visible,
 }
 
 .field input:focus {
-  background: var(--surface-container-high);
+  background: rgba(23, 31, 51, 0.98);
   outline: none;
-  box-shadow: 0 0 0 2px var(--primary);
+  box-shadow:
+    0 18px 44px -24px rgba(0, 0, 0, 0.95),
+    0 0 0 2px var(--primary),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .player-input-o input:focus {
-  box-shadow: 0 0 0 2px var(--secondary);
+  box-shadow:
+    0 18px 44px -24px rgba(0, 0, 0, 0.95),
+    0 0 0 2px var(--secondary),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .field-error {

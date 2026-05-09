@@ -196,6 +196,7 @@ function renderSetupScreen(): string {
       <div class="ambient ambient-secondary" aria-hidden="true"></div>
 
       <header class="setup-identity">
+        <h1 class="game-title">TRES EN RAYA</h1>
         <p class="subtitle">Elige cómo quieres jugar</p>
       </header>
 
